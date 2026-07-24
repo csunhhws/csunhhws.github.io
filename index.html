@@ -1,400 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LA Heat Health Warning System</title>
-  
-  <!-- Leaflet CSS for Maps -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
-  <style>
-    :root {
-      --bg-primary: #f8fafc;
-      --text-main: #0f172a;
-      --accent-blue: #0284c7;
-      --accent-red: #dc2626;
-      --accent-warning: #ea580c;
-      --card-bg: #ffffff;
-      --transition-speed: 0.5s;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LA Heat Health Warning System</title>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-    html, body {
-      height: 100%;
-      scroll-behavior: smooth;
-      background-color: var(--bg-primary);
-      color: var(--text-main);
-      overflow-x: hidden;
-    }
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    /* Fixed Navigation Bar */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 60px;
-      background-color: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(8px);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 2rem;
-      z-index: 1000;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: #475569;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover {
-      color: var(--accent-blue);
-    }
-
-    .btn-simulate {
-      background-color: var(--accent-warning);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s, transform 0.1s;
-    }
-
-    .btn-simulate:hover {
-      background-color: #c2410c;
-    }
-
-    .btn-simulate:active {
-      transform: scale(0.98);
-    }
-
-    /* Full-Screen Page Sections */
-    section {
-      min-height: 100vh;
-      width: 100vw;
-      padding: 80px 2rem 2rem 2rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      transition: background-color var(--transition-speed) ease;
-    }
-
-    /* Section 1: Weather Dashboard */
-    #dashboard {
-      text-align: center;
-      position: relative;
-    }
-
-    .weather-card {
-      background: var(--card-bg);
-      padding: 3rem;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-      max-width: 500px;
-      width: 100%;
-      transition: transform 0.3s ease, border-color var(--transition-speed);
-      border: 2px solid transparent;
-    }
-
-    .temp-display {
-      font-size: 5rem;
-      font-weight: 800;
-      margin: 1rem 0;
-      line-height: 1;
-    }
-
-    .warning-banner {
-      display: none;
-      background-color: #fef2f2;
-      border: 1px solid #fecaca;
-      color: var(--accent-red);
-      padding: 1rem;
-      border-radius: 8px;
-      margin-top: 1.5rem;
-      animation: pulse 2s infinite;
-    }
-
-    /* Heat Event Active Styles */
-    body.heat-event #dashboard {
-      background-color: #fff7ed;
-    }
-
-    body.heat-event .weather-card {
-      border-color: var(--accent-red);
-    }
-
-    body.heat-event .temp-display {
-      color: var(--accent-red);
-    }
-
-    body.heat-event .warning-banner {
-      display: block;
-    }
-
-    /* Section 2: Info & Tips */
-    #info {
-      background-color: #ffffff;
-    }
-
-    .info-container {
-      max-width: 800px;
-      width: 100%;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-
-    .info-card {
-      background-color: #f8fafc;
-      padding: 1.5rem;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-
-    .info-card:hover {
-      border-color: var(--accent-blue);
-    }
-
-    /* Section 3: Community Resources & Map */
-    #resources {
-      background-color: #f1f5f9;
-    }
-
-    #map {
-      height: 400px;
-      width: 100%;
-      max-width: 900px;
-      border-radius: 12px;
-      margin-top: 1.5rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-    /* Animations */
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.7; }
-      100% { opacity: 1; }
-    }
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Navigation -->
-  <nav>
-    <ul class="nav-links">
-      <li><a href="#dashboard">Dashboard</a></li>
-      <li><a href="#info" id="nav-info">Heat Safety</a></li>
-      <li><a href="#resources" id="nav-resources">LA Resources</a></li>
-    </ul>
-    <button class="btn-simulate" id="btn-simulate">Simulate Heat Event</button>
+<!-- HEAT HAZE BACKGROUND LAYER -->
+<div class="haze-layer" id="hazeLayer" aria-hidden="true">
+  <div class="haze-blob b1"></div>
+  <div class="haze-blob b2"></div>
+  <div class="haze-blob b3"></div>
+</div>
+
+<!-- TOP NAVIGATION -->
+<header class="topnav">
+  <div class="brand">
+    <span class="brand-mark">☀</span>
+    <div class="brand-text">
+      <span class="brand-title">HEAT&nbsp;WATCH</span>
+      <span class="brand-sub">LOS&nbsp;ANGELES&nbsp;COUNTY</span>
+    </div>
+  </div>
+
+  <nav class="tabs" role="tablist" aria-label="Site sections">
+    <button class="tab-btn active" data-section="today" role="tab" aria-selected="true">01 · Today</button>
+    <button class="tab-btn" data-section="info" role="tab" aria-selected="false">02 · Heat &amp; Health</button>
+    <button class="tab-btn" data-section="resources" role="tab" aria-selected="false">03 · Community Resources</button>
   </nav>
 
-  <!-- Section 1: LA Today Dashboard -->
-  <section id="dashboard">
-    <div class="weather-card">
-      <h2>Los Angeles, CA</h2>
-      <p style="color: #64748b; margin-top: 0.25rem;">Current Conditions</p>
-      
-      <div class="temp-display" id="temp-text">78°F</div>
-      <p id="condition-text" style="font-weight: 600; font-size: 1.2rem; color: #334155;">Sunny & Clear</p>
-      
-      <div style="margin-top: 1.5rem; font-size: 0.95rem;" id="recommendation-text">
-        <strong>Daily Tip:</strong> Great weather for outdoor activities! Stay hydrated.
+  <button id="simulateBtn" class="simulate-btn">
+    <span class="simulate-icon">⚠</span> Simulate Heat Event
+  </button>
+</header>
+
+<main>
+
+  <!-- ================= SECTION 1: TODAY ================= -->
+  <section id="today" class="page active">
+    <div class="today-grid">
+
+      <div class="today-main">
+        <p class="eyebrow" id="dateLabel">Loading date…</p>
+
+        <div class="temp-readout-wrap">
+          <div class="temp-readout" id="tempReadout">
+            <span id="tempValue">--</span><span class="deg">°F</span>
+          </div>
+          <div class="condition-chip" id="conditionChip">
+            <span id="conditionIcon">⛅</span>
+            <span id="conditionText">Fetching Los Angeles conditions…</span>
+          </div>
+        </div>
+
+        <div class="status-banner" id="statusBanner">
+          <span class="status-dot"></span>
+          <span id="statusText">CONDITIONS NORMAL — No heat advisory in effect</span>
+        </div>
       </div>
 
-      <div class="warning-banner" id="warning-box">
-        <strong>EXTREME HEAT WARNING IN EFFECT</strong>
-        <p style="font-size: 0.85rem; margin-top: 0.5rem;">Drink extra water, remain in air-conditioned areas, and check on vulnerable neighbors.</p>
+      <aside class="today-side">
+        <div class="metric-card">
+          <span class="metric-label">Feels Like</span>
+          <span class="metric-value" id="feelsLikeValue">--°F</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Humidity</span>
+          <span class="metric-value" id="humidityValue">--%</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Wind</span>
+          <span class="metric-value" id="windValue">-- mph</span>
+        </div>
+
+        <div class="recommendation-card" id="recommendationCard">
+          <span class="rec-eyebrow">Today's Recommendation</span>
+          <p id="recommendationText">Enjoy the day — conditions are comfortable. Stay hydrated as always.</p>
+        </div>
+      </aside>
+    </div>
+
+    <!-- HEAT WARNING PANEL — hidden until simulated -->
+    <div class="warning-panel" id="warningPanel" hidden>
+      <div class="warning-head">
+        <span class="warning-badge">EXCESSIVE HEAT WARNING</span>
+        <h2>103°F expected — dangerous heat in effect for Los Angeles County</h2>
+        <p>An Excessive Heat Warning means a prolonged period of dangerously hot temperatures. Heat-related illness risk is high for everyone, especially older adults, young children, outdoor workers, and people without reliable air conditioning.</p>
+      </div>
+      <ul class="warning-actions">
+        <li><span class="wa-icon">💧</span> Drink water every 15–20 minutes, even if you don't feel thirsty.</li>
+        <li><span class="wa-icon">🏠</span> Move to an air-conditioned space during the hottest hours, 12–6&nbsp;PM.</li>
+        <li><span class="wa-icon">🚗</span> Never leave children, pets, or medications in a parked car.</li>
+        <li><span class="wa-icon">🧑‍🤝‍🧑</span> Check on older neighbors and relatives at least twice a day.</li>
+        <li><span class="wa-icon">🚑</span> Call 911 for confusion, hot dry skin, or fainting — signs of heat stroke.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 2: HEAT & HEALTH INFO ================= -->
+  <section id="info" class="page">
+    <div class="section-head">
+      <p class="eyebrow">02 · Heat &amp; Health</p>
+      <h1>Know the signs. Beat the heat.</h1>
+      <p class="section-lede">Extreme heat is the leading weather-related cause of death in the United States. Most heat illness is preventable once you know what to watch for.</p>
+    </div>
+
+    <div class="illness-grid">
+      <article class="illness-card level-1">
+        <span class="illness-tag">Mild</span>
+        <h3>Heat Cramps</h3>
+        <p class="illness-symptoms"><strong>Watch for:</strong> Painful muscle spasms, usually in the legs or abdomen, during or after exertion.</p>
+        <p class="illness-action"><strong>Do:</strong> Stop activity, move to shade, sip water or a sports drink, gently stretch the muscle.</p>
+      </article>
+
+      <article class="illness-card level-2">
+        <span class="illness-tag">Moderate</span>
+        <h3>Heat Exhaustion</h3>
+        <p class="illness-symptoms"><strong>Watch for:</strong> Heavy sweating, cold clammy skin, dizziness, nausea, headache, weakness.</p>
+        <p class="illness-action"><strong>Do:</strong> Move to a cool place, loosen clothing, sip water, apply cool wet cloths. Seek care if symptoms worsen or last over an hour.</p>
+      </article>
+
+      <article class="illness-card level-3">
+        <span class="illness-tag">Severe · Emergency</span>
+        <h3>Heat Stroke</h3>
+        <p class="illness-symptoms"><strong>Watch for:</strong> Body temp above 103°F, hot red dry or damp skin, confusion, rapid pulse, possible loss of consciousness.</p>
+        <p class="illness-action"><strong>Do:</strong> Call 911 immediately. Move to shade, cool the body with water or ice while waiting for help. Do not give fluids by mouth.</p>
+      </article>
+    </div>
+
+    <div class="tips-strip">
+      <h2>Ways to stay cool</h2>
+      <div class="tips-row" id="tipsRow">
+        <div class="tip-pill">🥤 Drink water often — don't wait to feel thirsty</div>
+        <div class="tip-pill">🧴 Wear light, loose, light-colored clothing</div>
+        <div class="tip-pill">🕶️ Limit outdoor activity 12–6&nbsp;PM</div>
+        <div class="tip-pill">🏢 Visit a cooling center or air-conditioned space</div>
+        <div class="tip-pill">🚿 Take cool showers or use damp towels</div>
+        <div class="tip-pill">🐾 Never leave people or pets in parked cars</div>
+        <div class="tip-pill">🧑‍🤝‍🧑 Check in on elderly neighbors and relatives</div>
+        <div class="tip-pill">🍽️ Eat light meals — skip heavy, hot food</div>
       </div>
     </div>
   </section>
 
-  <!-- Section 2: Heat Safety Information -->
-  <section id="info">
-    <div class="info-container">
-      <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Heat Health & Prevention</h2>
-      <p style="color: #64748b;">Click on any message card below to reveal prevention steps.</p>
+  <!-- ================= SECTION 3: COMMUNITY RESOURCES ================= -->
+  <section id="resources" class="page">
+    <div class="section-head">
+      <p class="eyebrow">03 · Community Resources</p>
+      <h1>Find a cool place near you</h1>
+      <p class="section-lede">Cooling centers and community resource points across Los Angeles are free and open to the public during heat events.</p>
+    </div>
 
-      <div class="info-grid">
-        <div class="info-card" onclick="trackMessageOpen(this)">
-          <h3>Recognize Symptoms</h3>
-          <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #475569;">
-            Click to view warnings for Heat Exhaustion (heavy sweating, dizziness) vs Heat Stroke (high temperature, confusion).
-          </p>
-        </div>
+    <div class="resources-grid">
+      <div class="map-wrap">
+        <div id="map"></div>
+      </div>
 
-        <div class="info-card" onclick="trackMessageOpen(this)">
-          <h3>Indoor Cooling</h3>
-          <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #475569;">
-            Keep blinds closed during peak sunshine hours. Use fans to circulate air, but rely on AC when temperatures exceed 90°F.
-          </p>
-        </div>
-
-        <div class="info-card" onclick="trackMessageOpen(this)">
-          <h3>Hydration Guidelines</h3>
-          <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #475569;">
-            Drink water continuously throughout the day rather than waiting until you feel thirsty.
-          </p>
-        </div>
+      <div class="resource-list" id="resourceList">
+        <!-- resource cards injected by script.js -->
       </div>
     </div>
   </section>
 
-  <!-- Section 3: LA Community Resources Map -->
-  <section id="resources">
-    <div style="text-align: center; max-width: 600px;">
-      <h2 style="font-size: 2rem;">LA Cooling Centers</h2>
-      <p style="color: #64748b; margin-top: 0.5rem;">
-        Find public designated cooling safe havens across Los Angeles County.
-      </p>
-    </div>
+</main>
 
-    <div id="map"></div>
-  </section>
-
-  <!-- External Libraries -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Main JavaScript Code -->
-  <script>
-    // -------------------------------------------------------------
-    // 1. SUPABASE CONFIGURATION
-    // Replace these values with your Project Settings -> API credentials
-    // -------------------------------------------------------------
-    const SUPABASE_URL = "YOUR_SUPABASE_URL";
-    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
-    
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    let participantId = null;
-
-    // Initialize or Retrieve Participant Session
-    async function initParticipantSession() {
-      participantId = localStorage.getItem('participant_id');
-
-      if (!participantId) {
-        // Create new participant entry in Supabase
-        const { data, error } = await supabaseClient
-          .from('participant_metrics')
-          .insert([{}])
-          .select('participant_id')
-          .single();
-
-        if (error) {
-          console.error('Error initializing participant:', error);
-        } else if (data) {
-          participantId = data.participant_id;
-          localStorage.setItem('participant_id', participantId);
-          console.log('Registered new participant ID:', participantId);
-        }
-      } else {
-        console.log('Existing participant session:', participantId);
-      }
-    }
-
-    // Call the RPC increment function in Supabase
-    async function incrementMetric(metricName) {
-      if (!participantId) return;
-
-      const { error } = await supabaseClient.rpc('increment_metric', {
-        p_id: participantId,
-        metric_name: metricName
-      });
-
-      if (error) {
-        console.error(`Error updating ${metricName}:`, error);
-      } else {
-        console.log(`Incremented metric: ${metricName}`);
-      }
-    }
-
-    // -------------------------------------------------------------
-    // 2. INTERACTION TRACKING LOGIC
-    // -------------------------------------------------------------
-    
-    // Track Heat Event Simulation
-    document.getElementById('btn-simulate').addEventListener('click', () => {
-      document.body.classList.toggle('heat-event');
-      const isSimulated = document.body.classList.contains('heat-event');
-
-      if (isSimulated) {
-        document.getElementById('temp-text').innerText = "103°F";
-        document.getElementById('condition-text').innerText = "Dangerous Heat Wave";
-        document.getElementById('recommendation-text').innerHTML = "<strong>CRITICAL:</strong> Limit outdoor exposure. Seek AC immediately.";
-        document.getElementById('btn-simulate').innerText = "Reset Conditions";
-        
-        // Log event to Supabase
-        incrementMetric('heat_events_simulated');
-      } else {
-        document.getElementById('temp-text').innerText = "78°F";
-        document.getElementById('condition-text').innerText = "Sunny & Clear";
-        document.getElementById('recommendation-text').innerHTML = "<strong>Daily Tip:</strong> Great weather for outdoor activities! Stay hydrated.";
-        document.getElementById('btn-simulate').innerText = "Simulate Heat Event";
-      }
-    });
-
-    // Track Navigation Click to Resources Page
-    document.getElementById('nav-resources').addEventListener('click', () => {
-      incrementMetric('resources_clicked');
-    });
-
-    // Track Card Clicks inside Info Section
-    function trackMessageOpen(element) {
-      element.style.borderColor = "#0284c7";
-      incrementMetric('messages_opened');
-    }
-
-    // -------------------------------------------------------------
-    // 3. LEAFLET MAP INITIALIZATION
-    // -------------------------------------------------------------
-    function initMap() {
-      // Centered on Downtown Los Angeles
-      const map = L.map('map').setView([34.0522, -118.2437], 11);
-
-      // Free OpenStreetMap Tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(map);
-
-      // Highlighted Community Resource (e.g., Central Library Cooling Center)
-      const coolingCenter = L.marker([34.0508, -118.2552]).addTo(map);
-      coolingCenter.bindPopup("<b>LA Central Library Cooling Center</b><br>630 W 5th St, Los Angeles, CA<br><i>Open Air-Conditioned Facility</i>").openPopup();
-    }
-
-    // Initialize Page
-    window.addEventListener('DOMContentLoaded', () => {
-      initParticipantSession();
-      initMap();
-    });
-  </script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
 </body>
 </html>
