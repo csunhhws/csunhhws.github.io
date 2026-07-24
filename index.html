@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LA Heat Health Warning System</title>
+  
+  <!-- Leaflet CSS for Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --text-main: #0f172a;
+      --accent-blue: #0284c7;
+      --accent-red: #dc2626;
+      --accent-warning: #ea580c;
+      --card-bg: #ffffff;
+      --transition-speed: 0.5s;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      scroll-behavior: smooth;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    /* Fixed Navigation Bar */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+      z-index: 1000;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #475569;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-blue);
+    }
+
+    .btn-simulate {
+      background-color: var(--accent-warning);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-simulate:hover {
+      background-color: #c2410c;
+    }
+
+    .btn-simulate:active {
+      transform: scale(0.98);
+    }
+
+    /* Full-Screen Page Sections */
+    section {
+      min-height: 100vh;
+      width: 100vw;
+      padding: 80px 2rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: background-color var(--transition-speed) ease;
+    }
+
+    /* Section 1: Weather Dashboard */
+    #dashboard {
+      text-align: center;
+      position: relative;
+    }
+
+    .weather-card {
+      background: var(--card-bg);
+      padding: 3rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      max-width: 500px;
+      width: 100%;
+      transition: transform 0.3s ease, border-color var(--transition-speed);
+      border: 2px solid transparent;
+    }
+
+    .temp-display {
+      font-size: 5rem;
+      font-weight: 800;
+      margin: 1rem 0;
+      line-height: 1;
+    }
+
+    .warning-banner {
+      display: none;
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--accent-red);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1.5rem;
+      animation: pulse 2s infinite;
+    }
+
+    /* Heat Event Active Styles */
+    body.heat-event #dashboard {
+      background-color: #fff7ed;
+    }
+
+    body.heat-event .weather-card {
+      border-color: var(--accent-red);
+    }
+
+    body.heat-event .temp-display {
+      color: var(--accent-red);
+    }
+
+    body.heat-event .warning-banner {
+      display: block;
+    }
+
+    /* Section 2: Info & Tips */
+    #info {
+      background-color: #ffffff;
+    }
+
+    .info-container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .info-card {
+      background-color: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .info-card:hover {
+      border-color: var(--accent-blue);
+    }
+
+    /* Section 3: Community Resources & Map */
+    #resources {
+      background-color: #f1f5f9;
+    }
+
+    #map {
+      height: 400px;
+      width: 100%;
+      max-width: 900px;
+      border-radius: 12px;
+      margin-top: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <ul class="nav-links">
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#info" id="nav-info">Heat Safety</a></li>
+      <li><a href="#resources" id="nav-resources">LA Resources</a></li>
+    </ul>
+    <button class="btn-simulate" id="btn-simulate">Simulate Heat Event</button>
+  </nav>
+
+  <!-- Section 1: LA Today Dashboard -->
+  <section id="dashboard">
+    <div class="weather-card">
+      <h2>Los Angeles, CA</h2>
+      <p style="color: #64748b; margin-top: 0.25rem;">Current Conditions</p>
+      
+      <div class="temp-display" id="temp-text">78°F</div>
+      <p id="condition-text" style="font-weight: 600; font-size: 1.2rem; color: #334155;">Sunny & Clear</p>
+      
+      <div style="margin-top: 1.5rem; font-size: 0.95rem;" id="recommendation-text">
+        <strong>Daily Tip:</strong> Great weather for outdoor activities! Stay hydrated.
+      </div>
+
+      <div class="warning-banner" id="warning-box">
+        <strong>EXTREME HEAT WARNING IN EFFECT</strong>
+        <p style="font-size: 0.85rem; margin-top: 0.5rem;">Drink extra water, remain in air-conditioned areas, and check on vulnerable neighbors.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Heat Safety Information -->
+  <section id="info">
+    <div class="info-container">
+      <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Heat Health & Prevention</h2>
+      <p style="color: #64748b;">Click on any message card below to reveal prevention steps.</p>
+
+      <div class="info-grid">
+        <div class="info-card" onclick="trackMessageOpen(this)">
+          <h3>Recognize Symptoms</h3>
+          <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #475569;">
+            Click to view warnings for Heat Exhaustion (heavy sweating, dizziness) vs Heat Stroke (high temperature, confusion).
+          </p>
+        </div>
+
+        <div class="info-card" onclick="trackMessageOpen(this)">
+          <h3>Indoor Cooling</h3>
+          <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #475569;">
+            Keep blinds closed during peak sunshine hours. Use fans to circulate air, but rely on AC when temperatures exceed 90°F.
+          </p>
+        </div>
+
+        <div class="info-card" onclick="trackMessageOpen(this)">
+          <h3>Hydration Guidelines</h3>
+          <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #475569;">
+            Drink water continuously throughout the day rather than waiting until you feel thirsty.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: LA Community Resources Map -->
+  <section id="resources">
+    <div style="text-align: center; max-width: 600px;">
+      <h2 style="font-size: 2rem;">LA Cooling Centers</h2>
+      <p style="color: #64748b; margin-top: 0.5rem;">
+        Find public designated cooling safe havens across Los Angeles County.
+      </p>
+    </div>
+
+    <div id="map"></div>
+  </section>
+
+  <!-- External Libraries -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Main JavaScript Code -->
+  <script>
+    // -------------------------------------------------------------
+    // 1. SUPABASE CONFIGURATION
+    // Replace these values with your Project Settings -> API credentials
+    // -------------------------------------------------------------
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let participantId = null;
+
+    // Initialize or Retrieve Participant Session
+    async function initParticipantSession() {
+      participantId = localStorage.getItem('participant_id');
+
+      if (!participantId) {
+        // Create new participant entry in Supabase
+        const { data, error } = await supabaseClient
+          .from('participant_metrics')
+          .insert([{}])
+          .select('participant_id')
+          .single();
+
+        if (error) {
+          console.error('Error initializing participant:', error);
+        } else if (data) {
+          participantId = data.participant_id;
+          localStorage.setItem('participant_id', participantId);
+          console.log('Registered new participant ID:', participantId);
+        }
+      } else {
+        console.log('Existing participant session:', participantId);
+      }
+    }
+
+    // Call the RPC increment function in Supabase
+    async function incrementMetric(metricName) {
+      if (!participantId) return;
+
+      const { error } = await supabaseClient.rpc('increment_metric', {
+        p_id: participantId,
+        metric_name: metricName
+      });
+
+      if (error) {
+        console.error(`Error updating ${metricName}:`, error);
+      } else {
+        console.log(`Incremented metric: ${metricName}`);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 2. INTERACTION TRACKING LOGIC
+    // -------------------------------------------------------------
+    
+    // Track Heat Event Simulation
+    document.getElementById('btn-simulate').addEventListener('click', () => {
+      document.body.classList.toggle('heat-event');
+      const isSimulated = document.body.classList.contains('heat-event');
+
+      if (isSimulated) {
+        document.getElementById('temp-text').innerText = "103°F";
+        document.getElementById('condition-text').innerText = "Dangerous Heat Wave";
+        document.getElementById('recommendation-text').innerHTML = "<strong>CRITICAL:</strong> Limit outdoor exposure. Seek AC immediately.";
+        document.getElementById('btn-simulate').innerText = "Reset Conditions";
+        
+        // Log event to Supabase
+        incrementMetric('heat_events_simulated');
+      } else {
+        document.getElementById('temp-text').innerText = "78°F";
+        document.getElementById('condition-text').innerText = "Sunny & Clear";
+        document.getElementById('recommendation-text').innerHTML = "<strong>Daily Tip:</strong> Great weather for outdoor activities! Stay hydrated.";
+        document.getElementById('btn-simulate').innerText = "Simulate Heat Event";
+      }
+    });
+
+    // Track Navigation Click to Resources Page
+    document.getElementById('nav-resources').addEventListener('click', () => {
+      incrementMetric('resources_clicked');
+    });
+
+    // Track Card Clicks inside Info Section
+    function trackMessageOpen(element) {
+      element.style.borderColor = "#0284c7";
+      incrementMetric('messages_opened');
+    }
+
+    // -------------------------------------------------------------
+    // 3. LEAFLET MAP INITIALIZATION
+    // -------------------------------------------------------------
+    function initMap() {
+      // Centered on Downtown Los Angeles
+      const map = L.map('map').setView([34.0522, -118.2437], 11);
+
+      // Free OpenStreetMap Tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Highlighted Community Resource (e.g., Central Library Cooling Center)
+      const coolingCenter = L.marker([34.0508, -118.2552]).addTo(map);
+      coolingCenter.bindPopup("<b>LA Central Library Cooling Center</b><br>630 W 5th St, Los Angeles, CA<br><i>Open Air-Conditioned Facility</i>").openPopup();
+    }
+
+    // Initialize Page
+    window.addEventListener('DOMContentLoaded', () => {
+      initParticipantSession();
+      initMap();
+    });
+  </script>
+</body>
+</html>
