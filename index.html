@@ -138,6 +138,32 @@ body.heat-event .b3{ background: radial-gradient(circle, var(--red-deep), transp
   50%{ box-shadow:0 0 0 8px rgba(193,67,43,0); }
 }
 
+.sb-status{
+  position:fixed; left:18px; bottom:18px; z-index:60;
+  display:flex; align-items:center; gap:9px;
+  background: rgba(27,42,56,.92);
+  color: var(--cream);
+  font-family:var(--font-mono); font-size:11.5px; letter-spacing:.02em;
+  padding:10px 14px; border-radius:999px;
+  box-shadow:0 8px 24px rgba(27,42,56,.22);
+  cursor:pointer; user-select:none;
+  transition: background .2s ease, transform .15s ease;
+  max-width: calc(100vw - 36px);
+}
+.sb-status:hover{ transform:translateY(-2px); }
+.sb-status .sb-dot{
+  width:8px; height:8px; border-radius:50%; flex:none;
+  background:#8a97a3; 
+}
+.sb-status[data-state="connecting"] .sb-dot{ background: var(--amber); animation:pulse-btn 1.4s ease-in-out infinite; }
+.sb-status[data-state="connected"] .sb-dot{ background:#3FA66B; }
+.sb-status[data-state="error"] .sb-dot{ background: var(--red); }
+.sb-status[data-state="unconfigured"] .sb-dot{ background:#8a97a3; }
+.sb-status .sb-text{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sb-status .sb-copied{
+  color:#8FE3B0; font-weight:600; margin-left:4px;
+}
+
 main{ position:relative; z-index:1; min-height:100vh; }
 .page{
   display:none;
@@ -241,6 +267,7 @@ body.heat-event .temp-readout{ color: var(--red); }
   color:#fff; border-radius:20px;
   padding:32px clamp(20px,4vw,44px);
   animation: warn-in .5s ease;
+  animation: pulse-btn 1.8s ease-in-out infinite;
 }
 @keyframes warn-in{ from{ opacity:0; transform:scale(.97);} to{ opacity:1; transform:scale(1);} }
 
@@ -348,6 +375,10 @@ body.heat-event .temp-readout{ color: var(--red); }
 </head>
 <body>
 
+<div class="sb-status" id="sbStatus" data-state="connecting" title="Click to copy your participant ID">
+  <span class="sb-dot"></span>
+  <span class="sb-text" id="sbStatusText">Checking Database…</span>
+</div>
 
 <div class="haze-layer" id="hazeLayer" aria-hidden="true">
   <div class="haze-blob b1"></div>
@@ -511,61 +542,85 @@ body.heat-event .temp-readout{ color: var(--red); }
 
 const SUPABASE_URL = "https://bfwchpvlnnudpuayburn.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_ehjoC_TprGYJEhDS7TP2Ig_6TKP54Hb";
-
+ 
 let supabaseClient = null;
 let participantId = null;
-
+ 
+const sbStatusEl = document.getElementById("sbStatus");
+const sbStatusText = document.getElementById("sbStatusText");
+ 
+function setSbStatus(state, text) {
+  sbStatusEl.dataset.state = state;
+  sbStatusText.textContent = text;
+}
+ 
+sbStatusEl.addEventListener("click", () => {
+  if (!participantId) return;
+  navigator.clipboard.writeText(participantId).then(() => {
+    const prev = sbStatusText.textContent;
+    sbStatusText.textContent = "Copied!";
+    setTimeout(() => { sbStatusText.textContent = prev; }, 1200);
+  }).catch(() => {
+    window.prompt("Your participant ID:", participantId);
+  });
+});
+ 
 function initSupabase() {
   if (!SUPABASE_URL.startsWith("http") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.startsWith("YOUR_")) {
-    console.warn("[HeatWatch] Supabase is not configured yet. Metrics tracking is disabled; the rest of the site works normally.");
+    console.warn("Database is not configured yet — fill in SUPABASE_URL and SUPABASE_ANON_KEY below. Metrics tracking is disabled; the rest of the site works normally.");
+    setSbStatus("unconfigured", "Database not configured");
     return;
   }
   if (typeof window.supabase === "undefined") {
-    console.warn("[HeatWatch] Supabase JS library did not load (check your network/CDN access). Metrics tracking is disabled.");
+    console.warn("Database JS library did not load (check your network/CDN access). Metrics tracking is disabled.");
+    setSbStatus("error", "Database library failed to load");
     return;
   }
   try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   } catch (err) {
-    console.error("[HeatWatch] Failed to initialize Supabase client:", err);
+    console.error("[HeatWatch] Failed to initialize Databse client:", err);
     supabaseClient = null;
+    setSbStatus("error", "Database client failed to initialize");
   }
 }
-
+ 
 async function initParticipant() {
   if (!supabaseClient) return;
-
+ 
   const stored = localStorage.getItem("hhws_participant_id");
-
+ 
   if (stored) {
-    // Confirm the row still exists before trusting it.
     const { data, error } = await supabaseClient
       .from("participant_metrics")
       .select("participant_id")
       .eq("participant_id", stored)
       .maybeSingle();
-
+ 
     if (data && !error) {
       participantId = stored;
+      setSbStatus("connected", `Connected · ID ${participantId.slice(0, 8)}…`);
       return;
     }
   }
-
+ 
   const { data, error } = await supabaseClient
     .from("participant_metrics")
     .insert({})
     .select("participant_id")
     .single();
-
+ 
   if (error) {
     console.error("[HeatWatch] Could not create participant row:", error.message);
+    setSbStatus("error", `Insert failed: ${error.message}`);
     return;
   }
-
+ 
   participantId = data.participant_id;
   localStorage.setItem("hhws_participant_id", participantId);
+  setSbStatus("connected", `Connected · ID ${participantId.slice(0, 8)}…`);
 }
-
+ 
 async function incrementMetric(metricName) {
   if (!supabaseClient || !participantId) return;
   const { error } = await supabaseClient.rpc("increment_metric", {
@@ -579,8 +634,8 @@ const tabButtons = document.querySelectorAll(".tab-btn");
 const pages = document.querySelectorAll(".page");
 const visitedInfo = { info: false };
 
-const LEAVE_MS = 400;   // outgoing section fade/slide out
-const ENTER_MS = 1100;  // incoming section fade/slide/blur in
+const LEAVE_MS = 400;  
+const ENTER_MS = 1100;  
 let isTransitioning = false;
 
 function onSectionShown(id) {
@@ -831,7 +886,7 @@ function renderResourceList() {
 
 (async function init() {
   try { initSupabase(); await initParticipant(); }
-  catch (err) { console.error("[HeatWatch] Supabase init failed:", err); }
+  catch (err) { console.error("[HeatWatch] Database init failed:", err); }
 
   try { loadWeather(); }
   catch (err) { console.error("[HeatWatch] Weather init failed:", err); }
