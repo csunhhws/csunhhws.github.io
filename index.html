@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LA Heat Health Warning System</title>
+<title>CSUN Heat Health Warning System</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,10 +12,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
-/* ============================================================
-   HEAT WATCH — LA Heat Health Warning System
-   Tokens
-   ============================================================ */
+
 :root{
   --sky:        #EAF3F8;
   --sky-deep:   #D3E6F0;
@@ -41,7 +38,7 @@
   --heat-accent-deep: var(--teal-deep);
 }
 
-/* Data-driven theme switch when a heat event is simulated */
+
 body.heat-event{
   --heat-accent: var(--red);
   --heat-accent-deep: var(--red-deep);
@@ -65,9 +62,6 @@ h1,h2,h3{ font-family:var(--font-display); letter-spacing:.01em; }
   .page{ opacity:1 !important; }
 }
 
-/* ============================================================
-   SIGNATURE ELEMENT — Heat haze background
-   ============================================================ */
 .haze-layer{
   position:fixed; inset:0; z-index:0;
   overflow:hidden; pointer-events:none;
@@ -94,9 +88,6 @@ body.heat-event .b1{ background: radial-gradient(circle, var(--red), transparent
 body.heat-event .b2{ background: radial-gradient(circle, var(--amber), transparent 70%); opacity:.45; animation-duration:8s; }
 body.heat-event .b3{ background: radial-gradient(circle, var(--red-deep), transparent 70%); opacity:.35; animation-duration:5s; }
 
-/* ============================================================
-   TOP NAVIGATION
-   ============================================================ */
 .topnav{
   position:fixed; top:0; left:0; right:0; z-index:50;
   height:var(--nav-h);
@@ -147,9 +138,6 @@ body.heat-event .b3{ background: radial-gradient(circle, var(--red-deep), transp
   50%{ box-shadow:0 0 0 8px rgba(193,67,43,0); }
 }
 
-/* ============================================================
-   PAGE / SECTION TAKEOVER
-   ============================================================ */
 main{ position:relative; z-index:1; min-height:100vh; }
 .page{
   display:none;
@@ -176,9 +164,6 @@ main{ position:relative; z-index:1; min-height:100vh; }
   text-transform:uppercase; color: var(--heat-accent-deep); font-weight:600;
 }
 
-/* ============================================================
-   SECTION 1 — TODAY
-   ============================================================ */
 .today-grid{
   display:grid; grid-template-columns: 1.6fr 1fr; gap:48px;
   max-width:1200px; margin:0 auto;
@@ -250,7 +235,6 @@ body.heat-event .temp-readout{ color: var(--red); }
 }
 .recommendation-card p{ font-size:15px; line-height:1.5; }
 
-/* Warning panel */
 .warning-panel{
   max-width:1200px; margin:44px auto 0;
   background: linear-gradient(135deg, var(--red-deep), var(--red));
@@ -276,9 +260,6 @@ body.heat-event .temp-readout{ color: var(--red); }
 }
 .wa-icon{ font-size:18px; }
 
-/* ============================================================
-   SECTION 2 — INFO
-   ============================================================ */
 .section-head{ max-width:760px; margin:0 auto 40px; }
 .section-head h1{ font-size:clamp(32px,4.2vw,52px); margin-top:8px; font-weight:800; }
 .section-lede{ margin-top:14px; font-size:16px; line-height:1.6; color:var(--asphalt-70); }
@@ -311,9 +292,6 @@ body.heat-event .temp-readout{ color: var(--red); }
   padding:12px 18px; font-size:13.5px; font-weight:500;
 }
 
-/* ============================================================
-   SECTION 3 — RESOURCES
-   ============================================================ */
 .resources-grid{
   max-width:1200px; margin:0 auto;
   display:grid; grid-template-columns:1.4fr 1fr; gap:28px;
@@ -346,9 +324,6 @@ body.heat-event .temp-readout{ color: var(--red); }
 .leaflet-popup-content{ font-family:var(--font-body); font-size:13.5px; }
 .leaflet-popup-content b{ font-family:var(--font-display); font-size:15px; }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
 @media (max-width: 980px){
   .today-grid, .resources-grid{ grid-template-columns:1fr; }
   .illness-grid{ grid-template-columns:1fr; }
@@ -373,14 +348,14 @@ body.heat-event .temp-readout{ color: var(--red); }
 </head>
 <body>
 
-<!-- HEAT HAZE BACKGROUND LAYER -->
+
 <div class="haze-layer" id="hazeLayer" aria-hidden="true">
   <div class="haze-blob b1"></div>
   <div class="haze-blob b2"></div>
   <div class="haze-blob b3"></div>
 </div>
 
-<!-- TOP NAVIGATION -->
+
 <header class="topnav">
   <div class="brand">
     <span class="brand-mark">☀</span>
@@ -391,9 +366,9 @@ body.heat-event .temp-readout{ color: var(--red); }
   </div>
 
   <nav class="tabs" role="tablist" aria-label="Site sections">
-    <button class="tab-btn active" data-section="today" role="tab" aria-selected="true">01 · Today</button>
-    <button class="tab-btn" data-section="info" role="tab" aria-selected="false">02 · Heat &amp; Health</button>
-    <button class="tab-btn" data-section="resources" role="tab" aria-selected="false">03 · Community Resources</button>
+    <button class="tab-btn active" data-section="today" role="tab" aria-selected="true">Today</button>
+    <button class="tab-btn" data-section="info" role="tab" aria-selected="false">Heat &amp; Health</button>
+    <button class="tab-btn" data-section="resources" role="tab" aria-selected="false">Community Resources</button>
   </nav>
 
   <button id="simulateBtn" class="simulate-btn">
@@ -403,7 +378,6 @@ body.heat-event .temp-readout{ color: var(--red); }
 
 <main>
 
-  <!-- ================= SECTION 1: TODAY ================= -->
   <section id="today" class="page active">
     <div class="today-grid">
 
@@ -415,7 +389,6 @@ body.heat-event .temp-readout{ color: var(--red); }
             <span id="tempValue">--</span><span class="deg">°F</span>
           </div>
           <div class="condition-chip" id="conditionChip">
-            <span id="conditionIcon">⛅</span>
             <span id="conditionText">Fetching Los Angeles conditions…</span>
           </div>
         </div>
@@ -447,7 +420,6 @@ body.heat-event .temp-readout{ color: var(--red); }
       </aside>
     </div>
 
-    <!-- HEAT WARNING PANEL — hidden until simulated -->
     <div class="warning-panel" id="warningPanel" hidden>
       <div class="warning-head">
         <span class="warning-badge">EXCESSIVE HEAT WARNING</span>
@@ -455,16 +427,15 @@ body.heat-event .temp-readout{ color: var(--red); }
         <p>An Excessive Heat Warning means a prolonged period of dangerously hot temperatures. Heat-related illness risk is high for everyone, especially older adults, young children, outdoor workers, and people without reliable air conditioning.</p>
       </div>
       <ul class="warning-actions">
-        <li><span class="wa-icon">💧</span> Drink water every 15–20 minutes, even if you don't feel thirsty.</li>
-        <li><span class="wa-icon">🏠</span> Move to an air-conditioned space during the hottest hours, 12–6&nbsp;PM.</li>
-        <li><span class="wa-icon">🚗</span> Never leave children, pets, or medications in a parked car.</li>
-        <li><span class="wa-icon">🧑‍🤝‍🧑</span> Check on older neighbors and relatives at least twice a day.</li>
-        <li><span class="wa-icon">🚑</span> Call 911 for confusion, hot dry skin, or fainting — signs of heat stroke.</li>
+        <li>Drink water every 15–20 minutes, even if you don't feel thirsty.</li>
+        <li>Move to an air-conditioned space during the hottest hours, 12–6&nbsp;PM.</li>
+        <li>Never leave children, pets, or medications in a parked car.</li>
+        <li>Check on older neighbors and relatives at least twice a day.</li>
+        <li>Call 911 for confusion, hot dry skin, or fainting — signs of heat stroke.</li>
       </ul>
     </div>
   </section>
 
-  <!-- ================= SECTION 2: HEAT & HEALTH INFO ================= -->
   <section id="info" class="page">
     <div class="section-head">
       <p class="eyebrow">02 · Heat &amp; Health</p>
@@ -498,19 +469,19 @@ body.heat-event .temp-readout{ color: var(--red); }
     <div class="tips-strip">
       <h2>Ways to stay cool</h2>
       <div class="tips-row" id="tipsRow">
-        <div class="tip-pill">🥤 Drink water often — don't wait to feel thirsty</div>
-        <div class="tip-pill">🧴 Wear light, loose, light-colored clothing</div>
-        <div class="tip-pill">🕶️ Limit outdoor activity 12–6&nbsp;PM</div>
-        <div class="tip-pill">🏢 Visit a cooling center or air-conditioned space</div>
-        <div class="tip-pill">🚿 Take cool showers or use damp towels</div>
-        <div class="tip-pill">🐾 Never leave people or pets in parked cars</div>
-        <div class="tip-pill">🧑‍🤝‍🧑 Check in on elderly neighbors and relatives</div>
-        <div class="tip-pill">🍽️ Eat light meals — skip heavy, hot food</div>
+        <div class="tip-pill">Drink water often — don't wait to feel thirsty</div>
+        <div class="tip-pill">Wear light, loose, light-colored clothing</div>
+        <div class="tip-pill">Limit outdoor activity 12–6&nbsp;PM</div>
+        <div class="tip-pill">Visit a cooling center or air-conditioned space</div>
+        <div class="tip-pill">Take cool showers or use damp towels</div>
+        <div class="tip-pill">Never leave people or pets in parked cars</div>
+        <div class="tip-pill">Check in on elderly neighbors and relatives</div>
+        <div class="tip-pill">Eat light meals — skip heavy, hot food</div>
       </div>
     </div>
   </section>
 
-  <!-- ================= SECTION 3: COMMUNITY RESOURCES ================= -->
+
   <section id="resources" class="page">
     <div class="section-head">
       <p class="eyebrow">03 · Community Resources</p>
@@ -534,23 +505,16 @@ body.heat-event .temp-readout{ color: var(--red); }
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ============================================================
-   HEAT WATCH — app logic
-   ============================================================ */
 
-/* ---------- 1. SUPABASE CONFIG ----------------------------------
-   Fill these in with your project's values:
-   Supabase Dashboard → Project Settings → API
------------------------------------------------------------------- */
-const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL"; // e.g. https://xxxxxxxx.supabase.co
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://bfwchpvlnnudpuayburn.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_ehjoC_TprGYJEhDS7TP2Ig_6TKP54Hb";
 
 let supabaseClient = null;
 let participantId = null;
 
 function initSupabase() {
   if (!SUPABASE_URL.startsWith("http") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.startsWith("YOUR_")) {
-    console.warn("[HeatWatch] Supabase is not configured yet — fill in SUPABASE_URL and SUPABASE_ANON_KEY below. Metrics tracking is disabled; the rest of the site works normally.");
+    console.warn("[HeatWatch] Supabase is not configured yet. Metrics tracking is disabled; the rest of the site works normally.");
     return;
   }
   if (typeof window.supabase === "undefined") {
@@ -565,8 +529,6 @@ function initSupabase() {
   }
 }
 
-/* Get or create this browser's participant row, stored locally so
-   repeat visits reuse the same participant_id. */
 async function initParticipant() {
   if (!supabaseClient) return;
 
@@ -586,7 +548,6 @@ async function initParticipant() {
     }
   }
 
-  // No valid stored id — create a fresh participant row.
   const { data, error } = await supabaseClient
     .from("participant_metrics")
     .insert({})
@@ -611,7 +572,6 @@ async function incrementMetric(metricName) {
   if (error) console.error(`[HeatWatch] increment_metric(${metricName}) failed:`, error.message);
 }
 
-/* ---------- 2. NAVIGATION / SECTION TAKEOVER --------------------- */
 const tabButtons = document.querySelectorAll(".tab-btn");
 const pages = document.querySelectorAll(".page");
 const visitedInfo = { info: false };
@@ -626,8 +586,6 @@ function onSectionShown(id) {
     incrementMetric("messages_opened");
   }
   if (id === "resources") {
-    // Leaflet needs a nudge to size correctly the first time its
-    // container becomes visible.
     if (map) map.invalidateSize();
   }
 }
@@ -669,21 +627,20 @@ tabButtons.forEach((btn) => {
   btn.addEventListener("click", () => showSection(btn.dataset.section));
 });
 
-/* ---------- 3. WEATHER (Open-Meteo — no API key required) ------- */
 const LA_LAT = 34.0522;
 const LA_LON = -118.2437;
 
 const WEATHER_CODES = {
-  0: ["Clear sky", "☀️"], 1: ["Mostly clear", "🌤️"], 2: ["Partly cloudy", "⛅"], 3: ["Overcast", "☁️"],
-  45: ["Foggy", "🌫️"], 48: ["Foggy", "🌫️"],
-  51: ["Light drizzle", "🌦️"], 53: ["Drizzle", "🌦️"], 55: ["Heavy drizzle", "🌧️"],
-  61: ["Light rain", "🌧️"], 63: ["Rain", "🌧️"], 65: ["Heavy rain", "🌧️"],
-  71: ["Light snow", "🌨️"], 73: ["Snow", "🌨️"], 75: ["Heavy snow", "❄️"],
-  80: ["Rain showers", "🌦️"], 81: ["Rain showers", "🌦️"], 82: ["Violent showers", "⛈️"],
-  95: ["Thunderstorm", "⛈️"], 96: ["Thunderstorm", "⛈️"], 99: ["Thunderstorm", "⛈️"],
+  0: ["Clear sky"], 1: ["Mostly clear"], 2: ["Partly cloudy"], 3: ["Overcast"],
+  45: ["Foggy"], 48: ["Foggy"],
+  51: ["Light drizzle"], 53: ["Drizzle"], 55: ["Heavy drizzle"],
+  61: ["Light rain"], 63: ["Rain"], 65: ["Heavy rain"],
+  71: ["Light snow"], 73: ["Snow"], 75: ["Heavy snow"],
+  80: ["Rain showers"], 81: ["Rain showers"], 82: ["Violent showers"],
+  95: ["Thunderstorm"], 96: ["Thunderstorm"], 99: ["Thunderstorm"],
 };
 
-let liveConditions = null; // last real fetch, so "reset" can restore it
+let liveConditions = null; 
 
 async function loadWeather() {
   const dateLabel = document.getElementById("dateLabel");
@@ -696,14 +653,14 @@ async function loadWeather() {
     `&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FLos_Angeles`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000); // never hang more than 8s
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
 
   try {
     const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) throw new Error(`Weather API responded ${res.status}`);
     const json = await res.json();
     const c = json.current;
-    const [desc, icon] = WEATHER_CODES[c.weather_code] || ["Clear", "☀️"];
+    const [desc, icon] = WEATHER_CODES[c.weather_code] || ["Clear"];
 
     liveConditions = {
       temp: Math.round(c.temperature_2m),
@@ -715,7 +672,7 @@ async function loadWeather() {
     renderConditions(liveConditions, false);
   } catch (err) {
     console.error("[HeatWatch] Weather fetch failed, showing fallback conditions:", err);
-    liveConditions = { temp: 78, feelsLike: 80, humidity: 45, wind: 6, desc: "Clear sky", icon: "☀️" };
+    liveConditions = { temp: 78, feelsLike: 80, humidity: 45, wind: 6, desc: "Clear sky"};
     renderConditions(liveConditions, false);
   } finally {
     clearTimeout(timeoutId);
@@ -755,7 +712,6 @@ function renderConditions(c, isSimulated) {
   }
 }
 
-/* ---------- 4. SIMULATE HEAT EVENT ------------------------------- */
 const simulateBtn = document.getElementById("simulateBtn");
 let simulated = false;
 
@@ -767,19 +723,19 @@ simulateBtn.addEventListener("click", async () => {
   if (simulated) {
     simulateBtn.innerHTML = `<span class="simulate-icon">✕</span> Reset Conditions`;
     renderConditions(
-      { temp: 103, feelsLike: 111, humidity: 18, wind: 12, desc: "Excessive heat", icon: "🥵" },
+      { temp: 103, feelsLike: 111, humidity: 18, wind: 12, desc: "Excessive heat"},
       true
     );
     incrementMetric("heat_events_simulated");
   } else {
     simulateBtn.innerHTML = `<span class="simulate-icon">⚠</span> Simulate Heat Event`;
-    renderConditions(liveConditions || { temp: 78, feelsLike: 80, humidity: 45, wind: 6, desc: "Clear sky", icon: "☀️" }, false);
+    renderConditions(liveConditions || { temp: 78, feelsLike: 80, humidity: 45, wind: 6, desc: "Clear sky"}, false);
   }
 
   showSection("today");
 });
 
-/* ---------- 5. COMMUNITY RESOURCES MAP --------------------------- */
+
 const RESOURCES = [
   {
     name: "Pan Pacific Park Cooling Center",
@@ -871,7 +827,6 @@ function renderResourceList() {
   });
 }
 
-/* ---------- 6. INIT ------------------------------------------------ */
 (async function init() {
   try { initSupabase(); await initParticipant(); }
   catch (err) { console.error("[HeatWatch] Supabase init failed:", err); }
