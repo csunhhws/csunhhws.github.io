@@ -599,7 +599,7 @@ async function initParticipant() {
  
     if (data && !error) {
       participantId = stored;
-      setSbStatus("connected", `Connected · ID ${participantId.slice(0, 8)}…`);
+      setSbStatus("connected", `Connected · ID ${participantId.slice(0, 8)}`);
       return;
     }
   }
