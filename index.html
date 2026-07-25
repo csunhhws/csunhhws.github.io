@@ -360,7 +360,7 @@ body.heat-event .temp-readout{ color: var(--red); }
   <div class="brand">
     <span class="brand-mark">☀</span>
     <div class="brand-text">
-      <span class="brand-title">HEAT&nbsp;WATCH</span>
+      <span class="brand-title">HEAT&nbsp;HEALTH&nbsp;WARNING&nbsp;SYSTEM&nbsp;PROTOTYPE</span>
       <span class="brand-sub">LOS&nbsp;ANGELES&nbsp;COUNTY</span>
     </div>
   </div>
@@ -438,7 +438,7 @@ body.heat-event .temp-readout{ color: var(--red); }
 
   <section id="info" class="page">
     <div class="section-head">
-      <p class="eyebrow">02 · Heat &amp; Health</p>
+      <p class="eyebrow">Heat &amp; Health</p>
       <h1>Know the signs. Beat the heat.</h1>
       <p class="section-lede">Extreme heat is the leading weather-related cause of death in the United States. Most heat illness is preventable once you know what to watch for.</p>
     </div>
@@ -484,7 +484,7 @@ body.heat-event .temp-readout{ color: var(--red); }
 
   <section id="resources" class="page">
     <div class="section-head">
-      <p class="eyebrow">03 · Community Resources</p>
+      <p class="eyebrow">Community Resources</p>
       <h1>Find a cool place near you</h1>
       <p class="section-lede">Cooling centers and community resource points across Los Angeles are free and open to the public during heat events.</p>
     </div>
@@ -660,14 +660,14 @@ async function loadWeather() {
     if (!res.ok) throw new Error(`Weather API responded ${res.status}`);
     const json = await res.json();
     const c = json.current;
-    const [desc, icon] = WEATHER_CODES[c.weather_code] || ["Clear"];
+    const [desc] = WEATHER_CODES[c.weather_code] || ["Clear"];
 
     liveConditions = {
       temp: Math.round(c.temperature_2m),
       feelsLike: Math.round(c.apparent_temperature),
       humidity: Math.round(c.relative_humidity_2m),
       wind: Math.round(c.wind_speed_10m),
-      desc, icon,
+      desc,
     };
     renderConditions(liveConditions, false);
   } catch (err) {
@@ -688,7 +688,6 @@ function recommendationFor(temp) {
 
 function renderConditions(c, isSimulated) {
   document.getElementById("tempValue").textContent = c.temp;
-  document.getElementById("conditionIcon").textContent = c.icon;
   document.getElementById("conditionText").textContent = `${c.desc} in Los Angeles`;
   document.getElementById("feelsLikeValue").textContent = `${c.feelsLike}°F`;
   document.getElementById("humidityValue").textContent = `${c.humidity}%`;
