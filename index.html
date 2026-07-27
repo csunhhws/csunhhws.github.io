@@ -580,7 +580,7 @@ function initSupabase() {
   try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   } catch (err) {
-    console.error("[HeatWatch] Failed to initialize Databse client:", err);
+    console.error("[HHWS] Failed to initialize Databse client:", err);
     supabaseClient = null;
     setSbStatus("error", "Database client failed to initialize");
   }
@@ -612,7 +612,7 @@ async function initParticipant() {
     .single();
  
   if (error) {
-    console.error("[HeatWatch] Could not create participant row:", error.message);
+    console.error("[HHWS] Could not create participant row:", error.message);
     setSbStatus("error", `Insert failed: ${error.message}`);
     return;
   }
@@ -628,7 +628,7 @@ async function incrementMetric(metricName) {
     p_id: participantId,
     metric_name: metricName,
   });
-  if (error) console.error(`[HeatWatch] increment_metric(${metricName}) failed:`, error.message);
+  if (error) console.error(`[HHWS] increment_metric(${metricName}) failed:`, error.message);
 }
 
 const tabButtons = document.querySelectorAll(".tab-btn");
@@ -730,7 +730,7 @@ async function loadWeather() {
     };
     renderConditions(liveConditions, false);
   } catch (err) {
-    console.error("[HeatWatch] Weather fetch failed, showing fallback conditions:", err);
+    console.error("[HHWS] Weather fetch failed, showing fallback conditions:", err);
     liveConditions = { temp: 78, feelsLike: 80, humidity: 45, wind: 6, desc: "Clear sky"};
     renderConditions(liveConditions, false);
   } finally {
@@ -800,6 +800,7 @@ const RESOURCES = [
     type: "Cooling Center · Highlighted",
     lat: 34.2346, lon: -118.4801,
     desc: "Library with air-conditioning open to the public during heat alerts. Close to CSUN.",
+    addr: "16244 Nordhoff St, North Hills, CA 91343",
     highlighted: true,
   },
   {
@@ -807,18 +808,21 @@ const RESOURCES = [
     type: "Cooling Center",
     lat: 34.2270, lon: -118.4420,
     desc: "San Fernando Valley cooling center with extended hours during heat advisories.",
+    addr: "8600 Hazeltine Ave, Panorama City, CA 91402",
   },
   {
     name: "Pan Pacific Park Cooling Center",
     type: "Cooling Center",
     lat: 34.0765, lon: -118.3607,
     desc: "Air-conditioned recreation center open to the public during heat alerts. Free water available.",
+    addr: "7600 Beverly Blvd, Los Angeles, CA 90036",
   },
   {
     name: "MLK Jr. Community Center",
     type: "Cooling Center",
     lat: 34.0059, lon: -118.2878,
     desc: "South LA community hub with a designated cooling room and senior check-in services.",
+    addr: "3916 South Western Ave., Los Angeles, CA 90062",
   },
 ];
 
@@ -841,7 +845,7 @@ function makeMarkerIcon(highlighted) {
 
 function initMap() {
   if (typeof L === "undefined") {
-    console.warn("[HeatWatch] Leaflet did not load (check your network/CDN access) — map skipped.");
+    console.warn("[HHWS] Leaflet did not load (check your network/CDN access) — map skipped.");
     const mapEl = document.getElementById("map");
     if (mapEl) mapEl.innerHTML = '<p style="padding:24px;font-family:var(--font-body);color:var(--asphalt-70)">Map unavailable — couldn\'t load the map library. Check your internet connection and reload.</p>';
     return;
@@ -875,6 +879,7 @@ function renderResourceList() {
       <h4>${r.name}</h4>
       <span class="r-type">${r.type}</span>
       <p>${r.desc}</p>
+      <p>${r.addr}</p>
       <button class="r-cta">View on map</button>
     `;
     card.querySelector(".r-cta").addEventListener("click", () => {
@@ -887,16 +892,16 @@ function renderResourceList() {
 
 (async function init() {
   try { initSupabase(); await initParticipant(); }
-  catch (err) { console.error("[HeatWatch] Database init failed:", err); }
+  catch (err) { console.error("[HHWS] Database init failed:", err); }
 
   try { loadWeather(); }
-  catch (err) { console.error("[HeatWatch] Weather init failed:", err); }
+  catch (err) { console.error("[HHWS] Weather init failed:", err); }
 
   try { initMap(); }
-  catch (err) { console.error("[HeatWatch] Map init failed:", err); }
+  catch (err) { console.error("[HHWS] Map init failed:", err); }
 
   try { renderResourceList(); }
-  catch (err) { console.error("[HeatWatch] Resource list init failed:", err); }
+  catch (err) { console.error("[HHWS] Resource list init failed:", err); }
 })();
 
 </script>
