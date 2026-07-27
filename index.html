@@ -869,9 +869,6 @@ function initMap() {
     marker.bindPopup(
       `<b>${r.name}</b><br>${r.type}<br><span style="color:#555">${r.desc}</span>`
     );
-    if (r.highlighted) {
-      marker.openPopup();
-    }
     marker.on("click", () => incrementMetric("resources_clicked"));
   });
 }
