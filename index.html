@@ -739,9 +739,9 @@ async function loadWeather() {
 }
 
 function recommendationFor(temp) {
-  if (temp >= 100) return "Dangerous heat today. Limit time outdoors, drink water constantly, and check on neighbors who may be vulnerable.";
-  if (temp >= 90) return "It's hot out there. Stay hydrated, seek shade during midday hours, and take it easy on strenuous outdoor activity.";
-  if (temp >= 80) return "Warm and pleasant. Keep water on hand if you're spending time outside this afternoon.";
+  if (temp >= 100) return "Dangerous heat today. Recommendation for extreme heat.";
+  if (temp >= 90) return "It's hot out there. Recommendation for heat.";
+  if (temp >= 80) return "Warm and pleasant. Recommendation for mild heat.";
   return "Conditions are comfortable. Enjoy the day and stay hydrated.";
 }
 
@@ -811,18 +811,18 @@ const RESOURCES = [
     addr: "3323 W. Victory Boulevard Burbank, CA 91505",
   },
   {
-    name: "Pan Pacific Park Cooling Center",
-    type: "Cooling Center",
-    lat: 34.0765, lon: -118.3607,
-    desc: "Air-conditioned recreation center open to the public during heat alerts. Free water available.",
-    addr: "7600 Beverly Blvd, Los Angeles, CA 90036",
-  },
-  {
     name: "Laurel Canyon Dog Park",
     type: "Hydration Station",
     lat: 34.1214, lon: -118.3800,
     desc: "Off-leash dog park with hydration station, dog washing station, and shaded areas.",
     addr: "8260 Mulholland Drive Studio City, CA 90046",
+  },
+  {
+    name: "Pan Pacific Park Cooling Center",
+    type: "Cooling Center",
+    lat: 34.0765, lon: -118.3607,
+    desc: "Air-conditioned recreation center open to the public during heat alerts. Free water available.",
+    addr: "7600 Beverly Blvd, Los Angeles, CA 90036",
   },
   {
     name: "MLK Jr. Community Center",
