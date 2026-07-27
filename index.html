@@ -759,13 +759,13 @@ function renderConditions(c, isSimulated) {
 
   if (isSimulated) {
     statusBanner.classList.add("danger");
-    statusText.textContent = "EXCESSIVE HEAT WARNING IN EFFECT — take precautions now";
+    statusText.textContent = "EXCESSIVE HEAT WARNING IN EFFECT — Take precautions now";
     warningPanel.hidden = false;
   } else {
     statusBanner.classList.remove("danger");
     statusText.textContent = c.temp >= 90
-      ? "HEAT ADVISORY — stay hydrated and limit sun exposure"
-      : "CONDITIONS NORMAL — no heat advisory in effect";
+      ? "HEAT ADVISORY — Stay hydrated and limit sun exposure"
+      : "CONDITIONS NORMAL — No heat advisory in effect";
     warningPanel.hidden = true;
   }
 }
