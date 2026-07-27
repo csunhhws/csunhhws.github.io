@@ -455,15 +455,15 @@ body.heat-event .temp-readout { color: var(--red); }
     <div class="warning-panel" id="warningPanel" hidden>
       <div class="warning-head">
         <span class="warning-badge">EXCESSIVE HEAT WARNING</span>
-        <h2>103°F expected — dangerous heat in effect for Los Angeles County</h2>
-        <p>An Excessive Heat Warning means a prolonged period of dangerously hot temperatures. Heat-related illness risk is high for everyone, especially older adults, young children, outdoor workers, and people without reliable air conditioning.</p>
+        <h2>Dangerous heat event in effect in Los Angeles County</h2>
+        <p>Expect a prolonged period of dangerously hot temperatures. Heat-related illness risk is high for everyone, especially older adults, young children, outdoor workers, and people without reliable air conditioning. Check on at-risk people in your community.</p>
       </div>
       <ul class="warning-actions">
         <li>Drink water every 15–20 minutes, even if you don't feel thirsty.</li>
-        <li>Move to an air-conditioned space during the hottest hours, 12–6&nbsp;PM.</li>
-        <li>Never leave children, pets, or medications in a parked car.</li>
+        <li>Move to an air-conditioned space during the hottest hours: 12–6&nbsp;PM.</li>
+        <li>Never leave children or pets in a parked car.</li>
         <li>Check on older neighbors and relatives at least twice a day.</li>
-        <li>Call 911 for confusion, hot dry skin, or fainting — signs of heat stroke.</li>
+        <li>Call 911 if you experience confusion, hot dry skin, or fainting.</li>
       </ul>
     </div>
   </section>
@@ -502,16 +502,16 @@ body.heat-event .temp-readout { color: var(--red); }
     </div>
 
     <div class="tips-strip">
-      <h2>Ways to stay cool</h2>
+      <h2>Ways to stay safe</h2>
       <div class="tips-row" id="tipsRow">
-        <div class="tip-pill">Drink water often — don't wait to feel thirsty</div>
-        <div class="tip-pill">Wear light, loose, light-colored clothing</div>
-        <div class="tip-pill">Limit outdoor activity 12–6&nbsp;PM</div>
-        <div class="tip-pill">Visit a cooling center or air-conditioned space</div>
-        <div class="tip-pill">Take cool showers or use damp towels</div>
-        <div class="tip-pill">Never leave people or pets in parked cars</div>
-        <div class="tip-pill">Check in on elderly neighbors and relatives</div>
-        <div class="tip-pill">Eat light meals — skip heavy, hot food</div>
+        <div class="tip-pill">Behavior #1</div>
+        <div class="tip-pill">Behavior #2</div>
+        <div class="tip-pill">Behavior #3</div>
+        <div class="tip-pill">Behavior #4</div>
+        <div class="tip-pill">Behavior #5</div>
+        <div class="tip-pill">Behavior #6</div>
+        <div class="tip-pill">Behavior #7</div>
+        <div class="tip-pill">Behavior #8</div>
       </div>
     </div>
   </section>
@@ -742,7 +742,7 @@ function recommendationFor(temp) {
   if (temp >= 100) return "Dangerous heat today. Limit time outdoors, drink water constantly, and check on neighbors who may be vulnerable.";
   if (temp >= 90) return "It's hot out there. Stay hydrated, seek shade during midday hours, and take it easy on strenuous outdoor activity.";
   if (temp >= 80) return "Warm and pleasant. Keep water on hand if you're spending time outside this afternoon.";
-  return "Enjoy the day — conditions are comfortable. Stay hydrated as always.";
+  return "Conditions are comfortable. Enjoy the day and stay hydrated.";
 }
 
 function renderConditions(c, isSimulated) {
@@ -781,7 +781,7 @@ simulateBtn.addEventListener("click", async () => {
   if (simulated) {
     simulateBtn.innerHTML = `<span class="simulate-icon">✕</span> Reset Conditions`;
     renderConditions(
-      { temp: 103, feelsLike: 111, humidity: 18, wind: 12, desc: "Excessive heat"},
+      { temp: 103, feelsLike: 111, humidity: 18, wind: 12, desc: "Excessive heat" },
       true
     );
     incrementMetric("heat_events_simulated");
